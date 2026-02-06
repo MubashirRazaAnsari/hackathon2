@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import router from 'next/router';
 
 interface Task {
   id: string;
@@ -18,6 +19,9 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+
+  
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -54,6 +58,40 @@ export default function DashboardPage() {
 
     fetchTasks();
   }, []);
+
+ const handleDelete = async (taskId: string) => {
+    if (!confirm('Are you sure you want to delete this task?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        window.location.href = '/auth/signin';
+        return;
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${taskId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          window.location.href = '/auth/signin';
+          return;
+        }
+        throw new Error('Failed to delete task');
+      }
+
+      // Remove the task from the local state
+      setTasks(tasks.filter(task => task.id !== taskId));
+    } catch (err: any) {
+      setError(err.message || 'An error occurred while deleting the task');
+    }
+  };
 
   if (loading) {
     return (
@@ -114,6 +152,13 @@ export default function DashboardPage() {
                     View
                   </Button>
                 </Link>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleDelete(task.id)}
+                >
+                  Delete
+                </Button>
               </div>
             </div>
           ))}
