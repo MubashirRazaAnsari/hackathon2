@@ -1,0 +1,24 @@
+# Spec-Kit Plus Configuration for Hackathon II
+project:
+  name: "Hackathon II"
+  phases:
+    - "Phase I: Foundation"
+    - "Phase II: Core Features"
+    - "Phase III: Integration"
+    - "Phase IV: Optimization"
+    - "Phase V: Deployment"
+  target: "single evolving project covering Phase I → Phase V"
+  ai_assistant: "Claude"
+
+specifications:
+  directory: "specs"
+  history_directory: "specs-history"
+  constitution: "constitution.md"
+  overview: "overview.md"
+
+governance:
+  agents_file: "AGENTS.md"
+  claude_shim: "CLAUDE.md"
+
+defaults:
+  script_type: "sh"
