@@ -15,41 +15,43 @@ export default function SigninPage() {
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login`, {
+  try {
+    const encodedCredentials = btoa(`${email}:${password}`);
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login`,
+      {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Basic ${encodedCredentials}`,
         },
-        body: new URLSearchParams({
-          username: email,
-          password: password,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Login failed');
       }
+    );
 
-      const data = await response.json();
-
-      // Store the token in localStorage (in a real app, consider more secure storage)
-      localStorage.setItem('access_token', data.access_token);
-
-      // Redirect to dashboard after successful login
-      router.push('/dashboard');
-      router.refresh();
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during login');
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || 'Login failed');
     }
-  };
+
+    const data = await response.json();
+
+    // Store JWT
+    localStorage.setItem('access_token', data.access_token);
+
+    // Redirect
+    router.push('/dashboard');
+    router.refresh();
+  } catch (err: any) {
+    setError(err.message || 'An error occurred during login');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
