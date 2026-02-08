@@ -7,7 +7,7 @@ spec:
   version: v1
   metadata:
     - name: connectionString
-      value: "host=ep-odd-moon-airni0lc-pooler.c-4.us-east-1.aws.neon.tech user=neondb_owner password=npg_YTKp8ju1oxsg dbname=neondb port=5432 sslmode=require"
+      value: "host=${DB_HOST} user=${DB_USER} password=${DB_PASSWORD} dbname=${DB_NAME} port=5432 sslmode=require"
     - name: tableName
       value: "dapr_state"
     - name: metadataTableName
