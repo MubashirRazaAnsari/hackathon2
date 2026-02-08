@@ -8,6 +8,9 @@ export const auth = betterAuth({
             rejectUnauthorized: false // Required for Neon/some hosted Postgres
         }
     }),
+    baseURL: process.env.BETTER_AUTH_URL || 
+             process.env.NEXT_PUBLIC_AUTH_URL || 
+             "https://hackathon2-frontend-one.vercel.app",
     emailAndPassword: {
         enabled: true
     },
