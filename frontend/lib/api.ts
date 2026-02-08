@@ -2,9 +2,19 @@ import axios from 'axios';
 
 import { authClient } from './auth-client';
 
+const getBaseURL = () => {
+  const url = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+  // If it's a relative URL (starts with /), let the browser handle it
+  // Otherwise, ensure it's a valid absolute URL for server-side calls
+  if (typeof window === 'undefined' && url.startsWith('/')) {
+    return 'http://localhost:3000'; // Fallback for server-side build time
+  }
+  return url;
+};
+
 // Create an Axios instance with base configuration
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000',
+  baseURL: getBaseURL(),
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
