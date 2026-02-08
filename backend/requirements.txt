@@ -55,4 +55,5 @@ uvicorn==0.29.0
 uvloop==0.22.1
 watchfiles==1.1.1
 websockets==16.0
-慤牰㴽⸱㘱ㄮ搊灡⵲硥⵴慦瑳灡㵩ㄽㄮ⸶਱
+dapr==1.16.1
+dapr-ext-fastapi==1.16.1
