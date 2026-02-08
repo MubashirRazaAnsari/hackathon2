@@ -3,10 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-
 import { signUp } from '@/lib/auth-client';
 
 export default function SignupPage() {
@@ -34,8 +30,6 @@ export default function SignupPage() {
         throw new Error(res.error.message || 'Registration failed');
       }
 
-      // On success, the callbackURL will handle the redirect.
-      // But we can also refresh to ensure user state is picked up.
       router.refresh();
       router.push('/dashboard');
     } catch (err: any) {
@@ -45,83 +39,86 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create a new account
-        </h2>
-      </div>
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="w-full max-w-md space-y-8">
+        
+        <div className="text-center space-y-2">
+          <Link href="/" className="inline-block text-indigo-400 hover:text-indigo-300 mb-4 transition-colors">
+             ← Back to home
+          </Link>
+          <h2 className="text-4xl font-black gradient-text">Recruit Personnel</h2>
+          <p className="text-slate-400">Join the next generation of productivity</p>
+        </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="glass-card p-8 md:p-10">
           {error && (
-            <div className="mb-4 bg-red-50 text-red-700 p-3 rounded-md">
-              {error}
+            <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm">
+               ⚠️ {error}
             </div>
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <Label htmlFor="name">Full Name</Label>
-              <Input
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-300 ml-1" htmlFor="name">Full Name</label>
+              <input
                 id="name"
-                name="name"
                 type="text"
-                autoComplete="name"
                 required
+                placeholder="Commander Doe"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="mt-1"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
               />
             </div>
 
-            <div>
-              <Label htmlFor="email">Email address</Label>
-              <Input
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-300 ml-1" htmlFor="email">Email Address</label>
+              <input
                 id="email"
-                name="email"
                 type="email"
-                autoComplete="email"
                 required
+                placeholder="name@nexus.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
               />
             </div>
 
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-300 ml-1" htmlFor="password">Password</label>
+              <input
                 id="password"
-                name="password"
                 type="password"
-                autoComplete="current-password"
                 required
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
               />
             </div>
 
-            <div>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md"
-              >
-                {loading ? 'Creating account...' : 'Sign up'}
-              </Button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full mt-4 flex justify-center items-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  Initiating...
+                </>
+              ) : 'Initialize Account'}
+            </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+          <div className="mt-8 text-center">
+            <p className="text-sm text-slate-400">
               Already have an account?{' '}
               <Link
                 href="/auth/signin"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
+                className="font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
               >
-                Sign in
+                Sign in instead
               </Link>
             </p>
           </div>
