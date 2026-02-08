@@ -16,7 +16,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="bg-circles">
+          <div className="circle circle-1"></div>
+          <div className="circle circle-2"></div>
+        </div>
+        <main className="relative z-10 min-h-screen">
+          {children}
+        </main>
+      </body>
     </html>
   );
 }
+```
