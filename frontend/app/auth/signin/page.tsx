@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import { signIn } from '@/lib/auth-client';
+
 export default function SigninPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,42 +17,28 @@ export default function SigninPage() {
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  setError('');
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  try {
-    const encodedCredentials = btoa(`${email}:${password}`);
+    try {
+      const res = await signIn.email({
+        email,
+        password,
+        callbackURL: '/dashboard'
+      });
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/login`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Basic ${encodedCredentials}`,
-        },
+      if (res.error) {
+        throw new Error(res.error.message || 'Login failed');
       }
-    );
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.detail || 'Login failed');
+      router.refresh();
+      router.push('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during login');
+      setLoading(false);
     }
-
-    const data = await response.json();
-
-    // Store JWT
-    localStorage.setItem('access_token', data.access_token);
-
-    // Redirect
-    router.push('/dashboard');
-    router.refresh();
-  } catch (err: any) {
-    setError(err.message || 'An error occurred during login');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
   return (

@@ -13,33 +13,29 @@ class UserBase(SQLModel):
 
 class User(UserBase, table=True):
     """
-    User model compliant with Better Auth standards for user management
+    User model compliant with Better Auth standards (User table)
     """
-    id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
+    id: str = Field(primary_key=True)
+    name: str = Field(max_length=255)
     email: str = Field(unique=True, nullable=False, max_length=255)
-    password_hash: str = Field(nullable=False, max_length=255)
-    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
-    updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow, sa_column_kwargs={"onupdate": datetime.utcnow})
+    email_verified: bool = Field(default=False)
+    image: Optional[str] = Field(default=None, max_length=1000)
+    password_hash: Optional[str] = Field(default=None, max_length=255)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Relationship to Tasks
+    # Using string reference to avoid circular imports if Task is in another file
     tasks: List["Task"] = Relationship(back_populates="user")
+    
+    # Relationship to Conversations
+    conversations: List["Conversation"] = Relationship(back_populates="user")
 
 class UserRead(UserBase):
-    """
-    User read model following Better Auth principles for user data exposure
-    """
     id: str
-
-class UserCreate(UserBase):
-    """
-    User creation model following Better Auth standards for secure user registration
-    """
-    email: str
-    password: str
+    name: str
+    image: Optional[str] = None
 
 class UserUpdate(SQLModel):
-    """
-    User update model following Better Auth principles for user data modification
-    """
-    email: Optional[str] = None
-    password: Optional[str] = None
+    name: Optional[str] = None
+    image: Optional[str] = None

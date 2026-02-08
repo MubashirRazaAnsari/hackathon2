@@ -1,56 +1,150 @@
-# AGENTS.md - Agent Configuration for Hackathon II
+# AGENTS.md
 
-## Spec-Driven Development Governance
+## **Purpose**
 
-This document enforces the mandatory workflow for Hackathon II: **Specify → Plan → Tasks → Implement**
+This project uses **Spec-Driven Development (SDD)** — a workflow where **no agent is allowed to write code until the specification is complete and approved**.
+All AI agents (Claude, Copilot, Gemini, local LLMs, etc.) must follow the **Spec-Kit lifecycle**:
 
-## Mandatory Workflow Hierarchy
+> **Specify → Plan → Tasks → Implement**
 
-### Spec Hierarchy (Strict Order)
-1. **Constitution** - Foundational principles (specs/constitution.md)
-2. **Specify** - Detailed specifications in specs/ directory
-3. **Plan** - Implementation plans in specs/ directory
-4. **Tasks** - Executable todo items derived from plans
+This prevents “vibe coding,” ensures alignment across agents, and guarantees that every implementation step maps back to an explicit requirement.
 
-### Enforcement Rules
-- **NO manual coding allowed** - All code must follow the Specify → Plan → Tasks → Implement sequence
-- **NO code without an approved task** - Every implementation must be traced back to a specific task
-- **Spec-first compliance** - All features must be specified before any implementation begins
-- **Task-driven execution** - Implementation only occurs through approved task lists
+---
 
-## Agent Responsibilities
+## **How Agents Must Work**
 
-### Claude Responsibilities (Spec-Kit Plus Compliance)
-- Generate specifications following the hierarchy: Constitution > Specify > Plan > Tasks
-- Create detailed implementation plans from specifications
-- Convert plans into actionable task lists using TodoWrite tool
-- Implement only what is specified in approved tasks
-- Reject any requests for direct coding without proper specification
+Every agent in this project MUST obey these rules:
 
-### Human Responsibilities
-- Define high-level requirements that become specifications
-- Approve specifications before implementation begins
-- Review and approve implementation plans
-- Validate completed tasks against original specifications
-- Maintain governance compliance across all phases
+1. **Never generate code without a referenced Task ID.**
+2. **Never modify architecture without updating `speckit.plan`.**
+3. **Never propose features without updating `speckit.specify` (WHAT).**
+4. **Never change approach without updating `speckit.constitution` (Principles).**
+5. **Every code file must contain a comment linking it to the Task and Spec sections.**
 
-## Implementation Protocol
+If an agent cannot find the required spec, it must **stop and request it**, not improvise.
 
-### Before Any Implementation
-1. Verify specification exists in specs/ directory
-2. Confirm specification approval by human stakeholders
-3. Create implementation plan using EnterPlanMode
-4. Generate task list using TodoWrite tool
-5. Execute only tasks from approved list
+---
 
-### During Implementation
-- Update task status (pending → in_progress → completed) in real-time
-- Reference specification files in all implementation comments
-- Maintain traceability from code back to specific tasks
-- Follow strict no-deviation policy from approved tasks
+## **Spec-Kit Workflow (Source of Truth)**
 
-### After Implementation
-- Verify implementation matches original specification
-- Update task list to completed status
-- Document any specification changes through proper channels
-- Prepare for next phase according to governance hierarchy
+### **1. Constitution (WHY — Principles & Constraints)**
+
+File: `specs/speckit.constitution.md` (Mapped from `speckit.constitution`)
+Defines the project’s non-negotiables: architecture values, security rules, tech stack constraints, performance expectations, and patterns allowed.
+
+Agents must check this before proposing solutions.
+
+---
+
+### **2. Specify (WHAT — Requirements, Journeys & Acceptance Criteria)**
+
+File: `specs/speckit.specify.md`
+
+Contains:
+
+- User journeys
+- Requirements
+- Acceptance criteria
+- Domain rules
+- Business constraints
+
+Agents must not infer missing requirements — they must request clarification or propose specification updates.
+
+---
+
+### **3. Plan (HOW — Architecture, Components, Interfaces)**
+
+File: `specs/speckit.plan.md`
+
+Includes:
+
+- Component breakdown
+- APIs & schema diagrams
+- Service boundaries
+- System responsibilities
+- High-level sequencing
+
+All architectural output MUST be generated from the Specify file.
+
+---
+
+### **4. Tasks (BREAKDOWN — Atomic, Testable Work Units)**
+
+File: `specs/speckit.tasks.md`
+
+Each Task must contain:
+
+- Task ID
+- Clear description
+- Preconditions
+- Expected outputs
+- Artifacts to modify
+- Links back to Specify + Plan sections
+
+Agents **implement only what these tasks define**.
+
+---
+
+### **5. Implement (CODE — Write Only What the Tasks Authorize)**
+
+Agents now write code, but must:
+
+- Reference Task IDs
+- Follow the Plan exactly
+- Not invent new features or flows
+- Stop and request clarification if anything is underspecified
+
+> The golden rule: **No task = No code.**
+
+---
+
+## **Agent Behavior in This Project**
+
+### **When generating code:**
+
+Agents must reference:
+
+```
+[Task]: T-001
+[From]: speckit.specify §2.1, speckit.plan §3.4
+```
+
+### **When proposing architecture:**
+
+Agents must reference:
+
+```
+Update required in speckit.plan → add component X
+```
+
+### **When proposing new behavior or a new feature:**
+
+Agents must reference:
+
+```
+Requires update in speckit.specify (WHAT)
+```
+
+### **When changing principles:**
+
+Agents must reference:
+
+```
+Modify constitution.md → Principle #X
+```
+
+---
+
+## **Agent Failure Modes (What Agents MUST Avoid)**
+
+Agents are NOT allowed to:
+
+- Freestyle code or architecture
+- Generate missing requirements
+- Create tasks on their own
+- Alter stack choices without justification
+- Add endpoints, fields, or flows that aren’t in the spec
+- Ignore acceptance criteria
+- Produce “creative” implementations that violate the plan
+
+If a conflict arises between spec files, the **Constitution > Specify > Plan > Tasks** hierarchy applies.

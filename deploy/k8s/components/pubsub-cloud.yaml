@@ -1,0 +1,32 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub
+spec:
+  type: pubsub.kafka
+  version: v1
+  metadata:
+    # Connection String for Confluent Cloud / Redpanda Cloud
+    - name: brokers
+      value: "pkc-xxxxx.us-east-2.aws.confluent.cloud:9092"
+    - name: authRequired
+      value: "true"
+    - name: saslUsername
+      value: "YOUR_API_KEY"
+    - name: saslPassword
+      value: "YOUR_API_SECRET"
+    - name: saslMechanism
+      value: "PLAIN"
+    - name: caRootLocation
+      # Dapr handles CA automatically for many providers, or mount a secret
+      value: ""
+
+    # Consumer Configuration
+    - name: consumerGroup
+      value: "todo-group-cloud-v1"
+    - name: clientID
+      value: "todo-cloud-client"
+
+    # SSL
+    - name: authType
+      value: "password"

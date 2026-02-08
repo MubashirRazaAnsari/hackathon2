@@ -16,7 +16,11 @@ interface Task {
   user_id: string;
 }
 
+import { useSession } from '@/lib/auth-client';
+import apiClient from '@/lib/api';
+
 export default function EditTaskPage() {
+  const { data: sessionData, isPending } = useSession();
   const params = useParams();
   const router = useRouter();
   const [task, setTask] = useState<Omit<Task, 'created_at' | 'completed_at'> | null>(null);
@@ -27,45 +31,33 @@ export default function EditTaskPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (isPending) return;
+    
+    if (!sessionData) {
+      router.push('/auth/signin');
+      return;
+    }
+
     const fetchTask = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-          router.push('/auth/signin');
-          return;
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${params.id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            router.push('/auth/signin');
-            return;
-          }
-          if (response.status === 404) {
-            setError('Task not found');
-            return;
-          }
-          throw new Error('Failed to fetch task');
-        }
-
-        const data = await response.json();
+        const response = await apiClient.get(`/api/tasks/${params.id}`);
+        const data = response.data;
         setTask(data);
         setTitle(data.title);
         setDescription(data.description || '');
       } catch (err: any) {
-        setError(err.message || 'An error occurred while fetching the task');
+        if (err.response?.status === 404) {
+          setError('Task not found');
+        } else {
+          setError(err.message || 'An error occurred while fetching the task');
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchTask();
-  }, [params.id, router]);
+  }, [params.id, router, sessionData, isPending]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,30 +65,7 @@ export default function EditTaskPage() {
     setError(null);
 
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        router.push('/auth/signin');
-        return;
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${params.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title, description }),
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/auth/signin');
-          return;
-        }
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to update task');
-      }
-
+      await apiClient.put(`/api/tasks/${params.id}`, { title, description });
       router.push(`/tasks/${params.id}`);
       router.refresh();
     } catch (err: any) {

@@ -1,55 +1,48 @@
-# Overview of Hackathon II Project
+# Project Overview: Tactical Todo Evolution
 
-## Project Summary
-The Hackathon II project is a comprehensive software development initiative following a spec-driven approach. This project will evolve through five distinct phases, each building upon the previous to deliver a complete solution.
+## Mission Summary
 
-## Project Details
-- **Name**: Hackathon II
-- **Approach**: Spec-Driven Development
-- **AI Assistant**: Claude
-- **Script Type**: sh
-- **Target**: Single evolving project covering Phase I → Phase V
+A multi-phase evolution of a task management system, transitioning from a humble Python CLI to a cloud-native, AI-powered, event-driven ecosystem.
 
-## Phase Descriptions
+## Technical Arsenal
 
-### Phase I: Foundation
-- Establish core architecture
-- Set up development environment
-- Define initial specifications
-- Create basic project structure
+- **Frontend**: Next.js 15, Tailwind CSS, Lucide React.
+- **Backend**: FastAPI, SQLModel, Uvicorn.
+- **Identity**: Better Auth (Integrated with Postgres).
+- **Persistence**: Neon PostgreSQL (Serverless).
+- **Intelligence**: OpenAI SDK (OpenRouter backend) with support for tool-calling and fallback parsing.
+- **Cloud**: Docker, Kubernetes (Minikube/GKE), Helm.
+- **EDA**: Dapr, Kafka (Phase 5).
 
-### Phase II: Core Features
-- Implement essential functionality
-- Develop primary user interfaces
-- Create core business logic
-- Establish data models
+## Operational Phases
 
-### Phase III: Integration
-- Connect different components
-- Implement API integrations
-- Handle data flow between systems
-- Ensure component interoperability
+### Phase I: The Seed
 
-### Phase IV: Optimization
-- Performance improvements
-- Code refactoring and cleanup
-- Security enhancements
-- Scalability improvements
+- **Artifact**: Python CLI application.
+- **Focus**: Core logic and in-memory state management.
 
-### Phase V: Deployment
-- Production environment setup
-- Deployment pipeline creation
-- Monitoring and logging implementation
-- Final testing and validation
+### Phase II: The Web Transition
 
-## Governance
-- Specifications are maintained in the `specs/` directory
-- Historical versions are tracked in `specs-history/`
-- Decision-making follows the constitution in `specs/constitution.md`
-- AI interactions are documented in `CLAUDE.md`
+- **Artifact**: Full-stack Next.js/FastAPI application.
+- **Focus**: Transition to multi-user web access with Better Auth and Neon Postgres.
 
-## Next Steps
-1. Refine Phase I specifications
-2. Begin foundational architecture work
-3. Establish development workflows
-4. Set up project tracking mechanisms
+### Phase III: The Intelligence Layer
+
+- **Artifact**: AI Tactical Assistant.
+- **Focus**: Integration of an AI agent via MCP-like tools, capable of managing tasks through natural language.
+
+### Phase IV: Containerized Fleet
+
+- **Artifact**: Orchestrated Kubernetes Deployment.
+- **Focus**: Scalability and infrastructure-as-code using Helm and Minikube.
+
+### Phase V: Event-Driven Autonomy (Active)
+
+- **Artifact**: Distributed Microservices Architecture.
+- **Focus**: Task priorities, tags, recurrence, and event-driven triggers via Dapr and Kafka.
+
+## Strategic Guidelines
+
+- **Approach**: Strict Spec-Driven Development (SDD).
+- **Governance**: Defined in `specs/constitution.md`.
+- **History Tracking**: Maintained in `specs/history.md`.

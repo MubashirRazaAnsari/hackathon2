@@ -14,7 +14,11 @@ interface Task {
   user_id: string;
 }
 
+import { useSession } from '@/lib/auth-client';
+import apiClient from '@/lib/api';
+
 export default function TaskDetailPage() {
+  const { data: sessionData, isPending } = useSession();
   const params = useParams();
   const router = useRouter();
   const [task, setTask] = useState<Task | null>(null);
@@ -22,69 +26,36 @@ export default function TaskDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (isPending) return;
+    
+    if (!sessionData) {
+      router.push('/auth/signin');
+      return;
+    }
+
     const fetchTask = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-          router.push('/auth/signin');
-          return;
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${params.id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            router.push('/auth/signin');
-            return;
-          }
-          if (response.status === 404) {
-            setError('Task not found');
-            return;
-          }
-          throw new Error('Failed to fetch task');
-        }
-
-        const data = await response.json();
-        setTask(data);
+        const response = await apiClient.get(`/api/tasks/${params.id}`);
+        setTask(response.data);
       } catch (err: any) {
-        setError(err.message || 'An error occurred while fetching the task');
+        if (err.response?.status === 404) {
+          setError('Task not found');
+        } else {
+          setError(err.message || 'An error occurred while fetching the task');
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchTask();
-  }, [params.id, router]);
+  }, [params.id, router, sessionData, isPending]);
 
   const handleComplete = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        router.push('/auth/signin');
-        return;
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${params.id}/complete`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/auth/signin');
-          return;
-        }
-        throw new Error('Failed to complete task');
-      }
-
+      const response = await apiClient.patch(`/api/tasks/${params.id}/complete`);
       // Refresh the task data
-      const data = await response.json();
+      const data = response.data;
       setTask(prev => prev ? { ...prev, status: 'completed', completed_at: data.task.completed_at } : null);
     } catch (err: any) {
       setError(err.message || 'An error occurred while completing the task');

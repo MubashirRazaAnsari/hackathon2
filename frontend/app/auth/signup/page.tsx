@@ -7,7 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import { signUp } from '@/lib/auth-client';
+
 export default function SignupPage() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,25 +23,23 @@ export default function SignupPage() {
     setError('');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      const res = await signUp.email({
+        email,
+        password,
+        name,
+        callbackURL: '/dashboard'
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Registration failed');
+      if (res.error) {
+        throw new Error(res.error.message || 'Registration failed');
       }
 
-      // Redirect to login after successful signup
-      router.push('/auth/signin');
+      // On success, the callbackURL will handle the redirect.
+      // But we can also refresh to ensure user state is picked up.
       router.refresh();
+      router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'An error occurred during registration');
-    } finally {
       setLoading(false);
     }
   };
@@ -60,6 +61,20 @@ export default function SignupPage() {
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit}>
+            <div>
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+
             <div>
               <Label htmlFor="email">Email address</Label>
               <Input

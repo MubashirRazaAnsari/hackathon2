@@ -14,37 +14,27 @@ interface Task {
   user_id: string;
 }
 
+import { useSession } from '@/lib/auth-client';
+import apiClient from '@/lib/api';
+
 export default function TasksPage() {
+  const { data: sessionData, isPending } = useSession();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (isPending) return;
+    
+    if (!sessionData) {
+      window.location.href = '/auth/signin';
+      return;
+    }
+
     const fetchTasks = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-          window.location.href = '/auth/signin';
-          return;
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            // Unauthorized - redirect to login
-            window.location.href = '/auth/signin';
-            return;
-          }
-          throw new Error('Failed to fetch tasks');
-        }
-
-        const data = await response.json();
-        setTasks(data);
+        const response = await apiClient.get('/api/tasks');
+        setTasks(response.data);
       } catch (err: any) {
         setError(err.message || 'An error occurred while fetching tasks');
       } finally {
@@ -53,7 +43,7 @@ export default function TasksPage() {
     };
 
     fetchTasks();
-  }, []);
+  }, [sessionData, isPending]);
 
   const handleDelete = async (taskId: string) => {
     if (!confirm('Are you sure you want to delete this task?')) {
@@ -61,27 +51,7 @@ export default function TasksPage() {
     }
 
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        window.location.href = '/auth/signin';
-        return;
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/tasks/${taskId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          window.location.href = '/auth/signin';
-          return;
-        }
-        throw new Error('Failed to delete task');
-      }
-
+      await apiClient.delete(`/api/tasks/${taskId}`);
       // Remove the task from the local state
       setTasks(tasks.filter(task => task.id !== taskId));
     } catch (err: any) {

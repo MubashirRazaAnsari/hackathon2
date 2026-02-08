@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "todo-app.fullname" . }}-recurring
+  labels:
+    app: {{ include "todo-app.name" . }}
+    component: recurring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "todo-app.name" . }}
+      component: recurring
+  template:
+    metadata:
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "recurring"
+        dapr.io/app-port: "8001"
+      labels:
+        app: {{ include "todo-app.name" . }}
+        component: recurring
+    spec:
+      containers:
+        - name: recurring
+          image: "{{ .Values.recurring.image.repository }}:{{ .Values.recurring.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8001
+              protocol: TCP
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "todo-app.fullname" . }}-secrets
+                  key: database-url
