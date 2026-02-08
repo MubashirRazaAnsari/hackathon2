@@ -10,11 +10,12 @@ from api.auth import router as auth_router
 from api.tasks import router as tasks_router
 from api.chat import router as chat_router
 
-# Create tables in database
-from sqlmodel import SQLModel
-SQLModel.metadata.create_all(bind=engine)
-
 app = FastAPI(title="Todo API", version="1.0.0")
+
+@app.on_event("startup")
+def on_startup():
+    from sqlmodel import SQLModel
+    SQLModel.metadata.create_all(bind=engine)
 
 # CORS middleware
 app.add_middleware(

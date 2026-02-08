@@ -3,7 +3,7 @@ variable "resource_group_name" {
 }
 variable "location" {
   description = "The Azure region for deployment"
-  default     = "eastus2"
+  default     = "centralus"
 }
 variable "cluster_name" {
   default = "todo-app-cluster"
