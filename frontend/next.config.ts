@@ -2,9 +2,17 @@ import { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   typedRoutes: true,
-  env: {
-    NEXT_PUBLIC_API_BASE_URL:
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000",
+  async rewrites() {
+    return [
+      {
+        source: "/api/proxy/:path*",
+        destination: "http://52.189.66.5/api/:path*",
+      },
+      {
+        source: "/health-check",
+        destination: "http://52.189.66.5/health",
+      },
+    ];
   },
 };
 
