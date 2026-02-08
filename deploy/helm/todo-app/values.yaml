@@ -51,8 +51,11 @@ ingress:
       paths:
         - path: /
           pathType: ImplementationSpecific
-          backend: frontend
+          backend: backend
         - path: /api
+          pathType: ImplementationSpecific
+          backend: backend
+        - path: /health
           pathType: ImplementationSpecific
           backend: backend
 

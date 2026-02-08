@@ -127,11 +127,11 @@ jobs:
       - name: Helm Upgrade
         run: |
           helm upgrade --install todo-app deploy/helm/todo-app \
-            --set backend.image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/todo-backend \
+            --set backend.image.repository=ghcr.io/mubashirrazaansari/hackathon2/todo-backend \
             --set backend.image.tag=sha-${{ github.sha }} \
-            --set recurring.image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/todo-recurring \
+            --set recurring.image.repository=ghcr.io/mubashirrazaansari/hackathon2/todo-recurring \
             --set recurring.image.tag=sha-${{ github.sha }} \
-            --set notification.image.repository=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/todo-notification \
+            --set notification.image.repository=ghcr.io/mubashirrazaansari/hackathon2/todo-notification \
             --set notification.image.tag=sha-${{ github.sha }} \
             --set secrets.databaseUrl="${{ secrets.DATABASE_URL }}" \
             --set secrets.openaiApiKey="${{ secrets.OPENAI_API_KEY }}" \
